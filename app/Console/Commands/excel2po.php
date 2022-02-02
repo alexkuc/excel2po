@@ -65,4 +65,35 @@ class excel2po extends Command
 
     return $mapping;
   }
+
+  /**
+   * Create associative array from given Excel column
+   * @param Worksheet $sheet Excel sheet
+   * @param string $from Excel column with original values
+   * @param string $to Excel column with translated values
+   * @return string[] associative array where key is $from and value is $to
+   */
+  protected function createDictionary(
+    Worksheet $sheet,
+    string $from,
+    string $to
+  ): array {
+
+    $dictionary = [];
+
+    $rowStart = 2; // skip 1st row, it is header
+
+    $rowEnd = $sheet->getHighestDataRow($from);
+
+    for ($i = $rowStart; $i <= $rowEnd; $i++) {
+
+      $key = $sheet->getCell($from . $i)->getFormattedValue();
+
+      $value = $sheet->getCell($to . $i)->getFormattedValue();
+
+      $dictionary[$key] = $value;
+    }
+
+    return $dictionary;
+  }
 }
