@@ -2,6 +2,8 @@
 
 namespace App\Console\Commands;
 
+use Gettext\Translation;
+use Gettext\Translations;
 use Illuminate\Console\Command;
 use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
 
@@ -95,5 +97,32 @@ class excel2po extends Command
     }
 
     return $dictionary;
+  }
+
+  /**
+   * Create Translations class from dictionary
+   * @param string $domain text domain
+   * @param string $language language
+   * @param string[] $dictionary associative array where $key is original string and $value is translated string
+   * @return Translations collection of translations
+   */
+  protected function createTranslations(
+    string $domain,
+    string $language,
+    array $dictionary
+  ): Translations {
+
+    $collection = Translations::create($domain, $language);
+
+    foreach ($dictionary as $from => $to) {
+
+      $translation = Translation::create(null, $from);
+
+      $translation->translate($to);
+
+      $collection->add($translation);
+    }
+
+    return $collection;
   }
 }
