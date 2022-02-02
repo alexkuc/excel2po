@@ -3,6 +3,7 @@
 namespace App\Console\Commands;
 
 use Illuminate\Console\Command;
+use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
 
 class excel2po extends Command
 {
@@ -41,5 +42,27 @@ class excel2po extends Command
   public function handle()
   {
     return 0;
+  }
+
+  /**
+   * Map first row to respective Excel columns
+   * @param Worksheet $sheet Excel sheet
+   * @return string[] associative array where $key is cell value and $value is Excel column
+   */
+  protected function createColumnMapping(Worksheet $sheet): array
+  {
+    $mapping = [];
+
+    foreach ($sheet->getRowIterator(1, 1) as $row) {
+
+      foreach ($row->getCellIterator() as $col => $cell) {
+
+        $value = $cell->getFormattedValue();
+
+        $mapping[$value] = $col;
+      }
+    }
+
+    return $mapping;
   }
 }
