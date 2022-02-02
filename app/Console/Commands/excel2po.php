@@ -172,15 +172,19 @@ class excel2po extends Command
 
     for ($i = $rowStart; $i <= $rowEnd; $i++) {
 
-      $fromValue = $sheet->getCell($from . $i)->getFormattedValue();
+      $fromValueDirty = $sheet->getCell($from . $i)->getFormattedValue();
 
-      if (empty($fromValue)) {
+      $fromValueClean = $this->removeNBSPCharacters($fromValueDirty);
+
+      if (empty($fromValueClean)) {
         continue;
       }
 
-      $toValue = $sheet->getCell($to . $i)->getFormattedValue();
+      $toValueDirty = $sheet->getCell($to . $i)->getFormattedValue();
 
-      $dictionary[$fromValue] = $toValue;
+      $toValueClean = $this->removeNBSPCharacters($toValueDirty);
+
+      $dictionary[$fromValueClean] = $toValueClean;
     }
 
     return $dictionary;
