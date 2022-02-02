@@ -5,6 +5,7 @@ namespace App\Console\Commands;
 use Gettext\Translation;
 use Gettext\Translations;
 use Illuminate\Console\Command;
+use Gettext\Generator\Generator;
 use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
 
 class excel2po extends Command
@@ -134,5 +135,44 @@ class excel2po extends Command
   protected function normalizePath(string $path): string
   {
     return rtrim($path, '/') . '/';
+  }
+
+  /**
+   * Create translation file from given translations and generator
+   * @param Translations $translations translations
+   * @param string $language language
+   * @param string $outputDir output directory
+   * @return bool true on success and false on failure
+   */
+  protected function generateFile(
+    Translations $translations,
+    Generator $generator,
+    string $language,
+    string $outputDir
+  ): bool {
+
+    $ext = null;
+
+    if (is_a($generator, PoGenerator::class)) {
+      $ext = 'po';
+    }
+
+    if (is_a($generator, MoGenerator::class)) {
+      $ext = 'mo';
+    }
+
+    if ($ext === null) {
+      return false; // unsupported generator
+    }
+
+    $generator = new $generator();
+
+    $dir = $this->normalizePath($outputDir);
+
+    $filename = sprintf('%s/%s.%s', $dir, $language, $ext);
+
+    $outcome = $generator->generateFile($translations, $filename);
+
+    return $outcome;
   }
 }
