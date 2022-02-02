@@ -172,11 +172,15 @@ class excel2po extends Command
 
     for ($i = $rowStart; $i <= $rowEnd; $i++) {
 
-      $key = $sheet->getCell($from . $i)->getFormattedValue();
+      $fromValue = $sheet->getCell($from . $i)->getFormattedValue();
 
-      $value = $sheet->getCell($to . $i)->getFormattedValue();
+      if (empty($fromValue)) {
+        continue;
+      }
 
-      $dictionary[$key] = $value;
+      $toValue = $sheet->getCell($to . $i)->getFormattedValue();
+
+      $dictionary[$fromValue] = $toValue;
     }
 
     return $dictionary;
