@@ -125,4 +125,14 @@ class excel2po extends Command
 
     return $collection;
   }
+
+  /**
+   * Make sure that trailing slash is always there
+   * @param string $path original path
+   * @return string $path with trailing slash
+   */
+  protected function normalizePath(string $path): string
+  {
+    return rtrim($path, '/') . '/';
+  }
 }
