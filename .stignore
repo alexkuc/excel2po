@@ -1,0 +1,11 @@
+.git
+vendor
+node_modules
+!.yarn/patches
+!.yarn/releases
+!.yarn/plugins
+!.yarn/sdks
+!.yarn/versions
+.yarn
+.pnp.*
+.DS_Store
