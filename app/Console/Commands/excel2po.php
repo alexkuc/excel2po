@@ -6,6 +6,10 @@ use Gettext\Translation;
 use Gettext\Translations;
 use Illuminate\Console\Command;
 use Gettext\Generator\Generator;
+use Gettext\Generator\MoGenerator;
+use Gettext\Generator\PoGenerator;
+use PhpOffice\PhpSpreadsheet\IOFactory;
+use Symfony\Component\Filesystem\Filesystem;
 use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
 
 class excel2po extends Command
@@ -42,9 +46,87 @@ class excel2po extends Command
    *
    * @return int
    */
-  public function handle()
-  {
-    return 0;
+  public function handle(
+    Filesystem $fs,
+    PoGenerator $poGenerator,
+    MoGenerator $moGenerator
+  ): int {
+    $excelFile = $this->argument('excelFile');
+
+    $outputDir = $this->argument('outputDir');
+
+    if (!$fs->exists($excelFile)) {
+      $this->error('Excel found not found!');
+      return static::FAILURE;
+    }
+
+    if (!$fs->exists($outputDir)) {
+      $fs->mkdir($outputDir);
+    }
+
+    $reader = IOFactory::createReaderForFile($excelFile);
+
+    $spreadsheet = $reader->load($excelFile);
+
+    $sheet = $spreadsheet->getActiveSheet();
+
+    $columns = $this->createColumnMapping($sheet);
+
+    $from = array_intersect_key($columns, ['msgid' => '']);
+
+    unset($columns['msgid']);
+
+    $domain = $this->argument('domain');
+
+    /** @var Translations[] */
+    $collection = [];
+
+    foreach ($columns as $language => $col) {
+
+      $dictionary = $this->createDictionary($sheet, $from['msgid'], $col);
+
+      $translations = $this->createTranslations($domain, $language, $dictionary);
+
+      $collection[$language] = $translations;
+    }
+
+    /** @var bool[] */
+    $poStatus = [];
+
+    foreach ($collection as $language => $translations) {
+      $poStatus[$language] = $this->generateFile(
+        $translations,
+        $poGenerator,
+        $language,
+        $outputDir
+      );
+    }
+
+    foreach ($poStatus as $language => $status) {
+      if (!$status) {
+        $this->error('Failed to generate .po file for ' . $language);
+      }
+    }
+
+    /** @var bool[] */
+    $moStatus = [];
+
+    foreach ($collection as $language => $translations) {
+      $moStatus[$language] = $this->generateFile(
+        $translations,
+        $moGenerator,
+        $language,
+        $outputDir
+      );
+    }
+
+    foreach ($moStatus as $language => $status) {
+      if (!$status) {
+        $this->error('Failed to generate .mo file for ' . $language);
+      }
+    }
+
+    return in_array(false, $poStatus, true) || in_array(false, $moStatus, true);
   }
 
   /**
