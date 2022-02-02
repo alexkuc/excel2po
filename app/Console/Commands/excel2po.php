@@ -11,7 +11,10 @@ class excel2po extends Command
    *
    * @var string
    */
-  protected $signature = 'excel2po';
+  protected $signature = 'excel2po
+                         {domain : Translated strings domain}
+                         {excelFile : Excel file with translations}
+                         {outputDir : output directory for .po & .mo files}';
 
   /**
    * The console command description.
