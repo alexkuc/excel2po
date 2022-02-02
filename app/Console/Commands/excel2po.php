@@ -261,4 +261,20 @@ class excel2po extends Command
 
     return $outcome;
   }
+
+  /**
+   * Remove non-breaking space characters from the given string
+   * @param string $input input
+   * @return string clean string
+   */
+  protected function removeNBSPCharacters(string $input): string
+  {
+    $clean = preg_replace('/\xc2\xa0/', '', $input);
+
+    if ($clean === null) {
+      return $input; // something went wrong, bail out
+    }
+
+    return $clean;
+  }
 }
