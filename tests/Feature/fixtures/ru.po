@@ -1,0 +1,11 @@
+msgid ""
+msgstr ""
+"Language: ru\n"
+"Plural-Forms: nplurals=3; plural=(n % 10 == 1 && n % 100 != 11) ? 0 : ((n % 10 >= 2 && n % 10 <= 4 && (n % 100 < 12 || n % 100 > 14)) ? 1 : 2);\n"
+"X-Domain: test-domain\n"
+
+msgid "string-1"
+msgstr "Строчка 1"
+
+msgid "string-2"
+msgstr "Строчка 2"

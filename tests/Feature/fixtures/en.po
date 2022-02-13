@@ -1,0 +1,11 @@
+msgid ""
+msgstr ""
+"Language: en\n"
+"Plural-Forms: nplurals=2; plural=n != 1;\n"
+"X-Domain: test-domain\n"
+
+msgid "string-1"
+msgstr "String 1"
+
+msgid "string-2"
+msgstr "String 2"
