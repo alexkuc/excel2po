@@ -83,6 +83,8 @@ class excel2po extends Command
 
     foreach ($columns as $language => $col) {
 
+      if (empty($language) || empty($col)) continue;
+
       $dictionary = $this->createDictionary($sheet, $from['msgid'], $col);
 
       $translations = $this->createTranslations($domain, $language, $dictionary);
